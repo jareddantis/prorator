@@ -10,7 +10,7 @@ const DEFAULT_DAYS = 7;
 class Person {
   constructor(name, days, recalculateFn) {
     this._name = name;
-    this._days = days;
+    this._days = Number(days) || 0;
     this.element = null;
     this.recalculateFn = recalculateFn;
     this.render();
@@ -38,11 +38,11 @@ class Person {
   }
 
   set days(days) {
-    this._days = days;
+    this._days = Number(days) || 0;
     if (this.element) {
       const daysInput = this.element.querySelector('.person-days');
       if (daysInput) {
-        daysInput.value = days;
+        daysInput.value = this._days;
       }
     }
     if (this.recalculateFn) {
@@ -74,8 +74,8 @@ class Person {
     if (daysInput) {
       daysInput.value = this._days;
       daysInput.addEventListener('input', (e) => {
-        e.preventDefault();
-        this.days = daysInput.value;
+        const value = Number(e.target.value) || 0;
+        this.days = value;
       });
     }
 
@@ -100,12 +100,12 @@ class Prorator {
   }
 
   set amount(amount) {
-    this._amount = amount;
+    this._amount = Number(amount) || 0;
     this.render();
   }
 
   set days(days) {
-    this._days = days;
+    this._days = Number(days) || 0;
     this.render();
   }
 
@@ -142,12 +142,13 @@ class Prorator {
   }
 
   calculate() {
-    let maxDays = 0;
+    // Validate inputs
+    if (this.days <= 0 || this.amount < 0) {
+      return {};
+    }
+
     const daysPerPerson = this.people.reduce((acc, person) => {
-      acc[person.name] = person.days;
-      if (person.days > maxDays) {
-        maxDays = person.days;
-      }
+      acc[person.name] = Math.max(0, Number(person.days) || 0);
       return acc;
     }, {});
 
@@ -166,8 +167,7 @@ class Prorator {
         }
       }
 
-      // Should not happen given we check for maxDays above,
-      // but just in case
+      // If no one is present, skip this day
       if (presentPeople.length === 0) {
         continue;
       }
@@ -180,9 +180,13 @@ class Prorator {
       }
     }
 
-    // Put any discrepancy to the person charged least
-    const discrepancy = this.amount - (amountPerDay * this.days);
-    if (discrepancy > 0) {
+    // Calculate actual total charged and fix any floating-point discrepancies
+    const actualTotal = Object.values(totalPerPerson).reduce((sum, amount) => sum + amount, 0);
+    const discrepancy = this.amount - actualTotal;
+    
+    // Distribute any discrepancy (due to floating-point precision) to the person charged least
+    // This ensures the total always equals exactly this.amount
+    if (Math.abs(discrepancy) > Number.EPSILON && Object.keys(totalPerPerson).length > 0) {
       const person = Object.entries(totalPerPerson).sort((a, b) => a[1] - b[1])[0];
       totalPerPerson[person[0]] += discrepancy;
     }
