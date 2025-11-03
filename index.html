@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prorator</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main>
+    <section>
+      <h1>Prorator</h1>
+    </section>
+    <section>
+      <h2>Total amount</h2>
+      <input type="number" id="amount" placeholder="Enter amount">
+    </section>
+    <section>
+      <h2>Time period</h2>
+      <input type="number" id="days" placeholder="Enter amount"> days
+    </section>
+    <section>
+      <h2>People</h2>
+      <div id="people"></div>
+      <button id="add-person">Add person</button>
+    </section>
+    <section>
+      <h2>Result</h2>
+      <p id="result"></p>
+    </section>
+    <section>
+      <p class="footer">Made by <a href="https://dantis.me">Jared Dantis</a></p>
+    </section>
+  </main>
+
+  <template id="person-template">
+    <div class="person">
+      <input type="text" class="person-name" placeholder="Enter name">
+      <input type="number" class="person-days" placeholder="Enter days">
+    </div>
+  </template>
+
+  <script src="./script.js"></script>
+</body>
+</html>
