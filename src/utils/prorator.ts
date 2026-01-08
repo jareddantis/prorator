@@ -3,26 +3,27 @@ import Decimal from 'decimal.js'
 
 const DECIMAL_PLACES = 2
 
-const addProration = (prorations: Proration[], person: string, amount: Decimal) => {
+const addProration = (prorations: Proration[], key: string, amount: Decimal) => {
   for (const proration of prorations) {
-    if (proration.name == person) {
+    if (proration.key == key) {
       proration.amount = proration.amount.plus(amount)
       return
     }
   }
 }
 
-const addExcess = (prorations: Proration[], people: string[], amount: Decimal) => {
+const addExcess = (prorations: Proration[], keys: string[], amount: Decimal) => {
   for (const proration of prorations) {
-    if (people.includes(proration.name)) {
+    if (keys.includes(proration.key)) {
       proration.amount = proration.amount.plus(amount)
     }
   }
 }
 
 const toFixed = (prorations: Proration[], decimalPlaces: number): ProrationFixed[] => {
-  return prorations.map(({ name, amount }) => {
+  return prorations.map(({ key, name, amount }) => {
     return {
+      key,
       name,
       amount: amount.toFixed(decimalPlaces),
     }
@@ -46,7 +47,7 @@ export const prorate = (request_: unknown): ProrationResult => {
   const numberOfPeople = people.length
   const peopleToCoverExcess = people
     .filter((person) => person.daysPresent == days)
-    .map((person) => person.name)
+    .map((person) => person.key)
 
   if (peopleToCoverExcess.length <= 0) {
     throw new Error(`Error: At least one person must have been present for all ${days} days.`)
@@ -58,6 +59,7 @@ export const prorate = (request_: unknown): ProrationResult => {
 
   const prorations: Proration[] = people.map((p) => {
     return {
+      key: p.key,
       name: p.name,
       amount: new Decimal(0),
     }
@@ -71,7 +73,7 @@ export const prorate = (request_: unknown): ProrationResult => {
     }
 
     const payable = amountPerPersonPerDay.mul(person.daysPresent)
-    addProration(prorations, person.name, payable)
+    addProration(prorations, person.key, payable)
 
     const unused = amountPerPerson.sub(payable)
     const unusedPerPerson = unused.div(peopleToCoverExcess.length)

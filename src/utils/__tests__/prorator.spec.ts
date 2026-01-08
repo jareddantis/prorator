@@ -1,12 +1,12 @@
 import { prorate } from '../prorator.ts'
 import { expect, test } from 'vitest'
-import { z } from 'zod'
+import { v4 as uuidv4 } from 'uuid'
 import { Person, ProrationResult } from '../models.ts'
 
 test('happy path - prorate 1000 equally across 2 people', () => {
   const people: Person[] = [
-    { name: 'A', daysPresent: 30 },
-    { name: 'B', daysPresent: 30 },
+    { key: uuidv4(), name: 'A', daysPresent: 30 },
+    { key: uuidv4(), name: 'B', daysPresent: 30 },
   ]
 
   const result = prorate({
@@ -18,8 +18,8 @@ test('happy path - prorate 1000 equally across 2 people', () => {
   const expectedResult: ProrationResult = {
     amountPerPersonPerDay: '16.67',
     perPerson: expect.arrayContaining([
-      { name: 'A', amount: '500.00' },
-      { name: 'B', amount: '500.00' },
+      { key: people[0]!.key, name: 'A', amount: '500.00' },
+      { key: people[1]!.key, name: 'B', amount: '500.00' },
     ]),
   }
 
@@ -28,10 +28,10 @@ test('happy path - prorate 1000 equally across 2 people', () => {
 
 test('happy path - prorate 1000 equally across 4 people', () => {
   const people: Person[] = [
-    { name: 'A', daysPresent: 30 },
-    { name: 'B', daysPresent: 30 },
-    { name: 'C', daysPresent: 30 },
-    { name: 'D', daysPresent: 30 },
+    { key: uuidv4(), name: 'A', daysPresent: 30 },
+    { key: uuidv4(), name: 'B', daysPresent: 30 },
+    { key: uuidv4(), name: 'C', daysPresent: 30 },
+    { key: uuidv4(), name: 'D', daysPresent: 30 },
   ]
 
   const result = prorate({
@@ -43,10 +43,10 @@ test('happy path - prorate 1000 equally across 4 people', () => {
   const expectedResult: ProrationResult = {
     amountPerPersonPerDay: '8.33',
     perPerson: expect.arrayContaining([
-      { name: 'A', amount: '250.00' },
-      { name: 'B', amount: '250.00' },
-      { name: 'C', amount: '250.00' },
-      { name: 'D', amount: '250.00' },
+      { key: people[0]!.key, name: 'A', amount: '250.00' },
+      { key: people[1]!.key, name: 'B', amount: '250.00' },
+      { key: people[2]!.key, name: 'C', amount: '250.00' },
+      { key: people[3]!.key, name: 'D', amount: '250.00' },
     ]),
   }
 
@@ -55,10 +55,10 @@ test('happy path - prorate 1000 equally across 4 people', () => {
 
 test('prorate 4000 with one person partially absent', () => {
   const people: Person[] = [
-    { name: 'A', daysPresent: 30 },
-    { name: 'B', daysPresent: 30 },
-    { name: 'C', daysPresent: 20 },
-    { name: 'D', daysPresent: 30 },
+    { key: uuidv4(), name: 'A', daysPresent: 30 },
+    { key: uuidv4(), name: 'B', daysPresent: 30 },
+    { key: uuidv4(), name: 'C', daysPresent: 20 },
+    { key: uuidv4(), name: 'D', daysPresent: 30 },
   ]
 
   const result = prorate({
@@ -70,10 +70,10 @@ test('prorate 4000 with one person partially absent', () => {
   const expectedResult: ProrationResult = {
     amountPerPersonPerDay: '33.33',
     perPerson: expect.arrayContaining([
-      { name: 'A', amount: '1111.11' },
-      { name: 'B', amount: '1111.11' },
-      { name: 'C', amount: '666.67' },
-      { name: 'D', amount: '1111.11' },
+      { key: people[0]!.key, name: 'A', amount: '1111.11' },
+      { key: people[1]!.key, name: 'B', amount: '1111.11' },
+      { key: people[2]!.key, name: 'C', amount: '666.67' },
+      { key: people[3]!.key, name: 'D', amount: '1111.11' },
     ]),
   }
 
@@ -82,10 +82,10 @@ test('prorate 4000 with one person partially absent', () => {
 
 test('prorate 3591.18 unequally (1)', () => {
   const people: Person[] = [
-    { name: 'A', daysPresent: 28 },
-    { name: 'B', daysPresent: 11 },
-    { name: 'C', daysPresent: 31 },
-    { name: 'D', daysPresent: 31 },
+    { key: uuidv4(), name: 'A', daysPresent: 28 },
+    { key: uuidv4(), name: 'B', daysPresent: 11 },
+    { key: uuidv4(), name: 'C', daysPresent: 31 },
+    { key: uuidv4(), name: 'D', daysPresent: 31 },
   ]
 
   const result = prorate({
@@ -97,10 +97,10 @@ test('prorate 3591.18 unequally (1)', () => {
   const expectedResult: ProrationResult = {
     amountPerPersonPerDay: '28.96',
     perPerson: expect.arrayContaining([
-      { name: 'A', amount: '810.91' }, // From user: 810.60
-      { name: 'B', amount: '318.57' }, // From user: 318.45
-      { name: 'C', amount: '1230.85' }, // From user: 1231.00
-      { name: 'D', amount: '1230.85' }, // From user: 1231.00
+      { key: people[0]!.key, name: 'A', amount: '810.91' }, // From user: 810.60
+      { key: people[1]!.key, name: 'B', amount: '318.57' }, // From user: 318.45
+      { key: people[2]!.key, name: 'C', amount: '1230.85' }, // From user: 1231.00
+      { key: people[3]!.key, name: 'D', amount: '1230.85' }, // From user: 1231.00
     ]),
   }
 
@@ -109,10 +109,10 @@ test('prorate 3591.18 unequally (1)', () => {
 
 test('prorate 3591.18 unequally (2)', () => {
   const people: Person[] = [
-    { name: 'A', daysPresent: 20 },
-    { name: 'B', daysPresent: 15 },
-    { name: 'C', daysPresent: 31 },
-    { name: 'D', daysPresent: 31 },
+    { key: uuidv4(), name: 'A', daysPresent: 20 },
+    { key: uuidv4(), name: 'B', daysPresent: 15 },
+    { key: uuidv4(), name: 'C', daysPresent: 31 },
+    { key: uuidv4(), name: 'D', daysPresent: 31 },
   ]
 
   const result = prorate({
@@ -124,10 +124,10 @@ test('prorate 3591.18 unequally (2)', () => {
   const expectedResult: ProrationResult = {
     amountPerPersonPerDay: '28.96',
     perPerson: expect.arrayContaining([
-      { name: 'A', amount: '579.22' }, // From user: 579.00
-      { name: 'B', amount: '434.42' }, // From user: 434.25
-      { name: 'C', amount: '1288.77' }, // From user: 1288.965
-      { name: 'D', amount: '1288.77' }, // From user: 1288.965
+      { key: people[0]!.key, name: 'A', amount: '579.22' }, // From user: 579.00
+      { key: people[1]!.key, name: 'B', amount: '434.42' }, // From user: 434.25
+      { key: people[2]!.key, name: 'C', amount: '1288.77' }, // From user: 1288.965
+      { key: people[3]!.key, name: 'D', amount: '1288.77' }, // From user: 1288.965
     ]),
   }
 
@@ -136,8 +136,8 @@ test('prorate 3591.18 unequally (2)', () => {
 
 test('person cannot exceed total days', () => {
   const people: Person[] = [
-    { name: 'A', daysPresent: 31 },
-    { name: 'B', daysPresent: 30 },
+    { key: uuidv4(), name: 'A', daysPresent: 31 },
+    { key: uuidv4(), name: 'B', daysPresent: 30 },
   ]
 
   expect(() =>
@@ -151,8 +151,8 @@ test('person cannot exceed total days', () => {
 
 test('person cannot have 0 days', () => {
   const people: Person[] = [
-    { name: 'A', daysPresent: 0 },
-    { name: 'B', daysPresent: 30 },
+    { key: uuidv4(), name: 'A', daysPresent: 0 },
+    { key: uuidv4(), name: 'B', daysPresent: 30 },
   ]
 
   expect(() =>
@@ -161,13 +161,13 @@ test('person cannot have 0 days', () => {
       days: 30,
       people,
     }),
-  ).toThrowError(/Too small: expected number to be >0/)
+  ).toThrowError(/Must have been present for at least 1 day/)
 })
 
 test('amount cannot be 0', () => {
   const people: Person[] = [
-    { name: 'A', daysPresent: 30 },
-    { name: 'B', daysPresent: 30 },
+    { key: uuidv4(), name: 'A', daysPresent: 30 },
+    { key: uuidv4(), name: 'B', daysPresent: 30 },
   ]
 
   expect(() =>
@@ -176,13 +176,13 @@ test('amount cannot be 0', () => {
       days: 30,
       people,
     }),
-  ).toThrowError(/Too small: expected number to be >0/)
+  ).toThrowError(/Amount must be greater than zero/)
 })
 
 test('days cannot be 0', () => {
   const people: Person[] = [
-    { name: 'A', daysPresent: 30 },
-    { name: 'B', daysPresent: 30 },
+    { key: uuidv4(), name: 'A', daysPresent: 30 },
+    { key: uuidv4(), name: 'B', daysPresent: 30 },
   ]
 
   expect(() =>
@@ -191,5 +191,5 @@ test('days cannot be 0', () => {
       days: 0,
       people,
     }),
-  ).toThrowError(/Too small: expected number to be >0/)
+  ).toThrowError(/Days must be greater than zero/)
 })

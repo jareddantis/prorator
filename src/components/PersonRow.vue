@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { PersonRow, UpdateDaysEvent, UpdateNameEvent } from '@/utils/models'
+import { Person, UpdateDaysEvent, UpdateNameEvent } from '@/utils/models'
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 import GenericButton from './GenericButton.vue'
 
-const props = defineProps<{ data: PersonRow }>()
-const { key, data: person } = props.data
+const { person } = defineProps<{ person: Person }>()
 
 const name: Ref<string> = ref(person.name)
 const daysPresent: Ref<number> = ref(person.daysPresent)
@@ -19,7 +18,7 @@ const emit = defineEmits<{
 const handleNameChange = (e: Event) => {
   const target = e.target as HTMLInputElement
   e.preventDefault()
-  emit('updateName', { key, newName: target.value })
+  emit('updateName', { key: person.key, newName: target.value })
 }
 
 const handleDaysChange = (e: Event) => {
@@ -28,13 +27,13 @@ const handleDaysChange = (e: Event) => {
 
   try {
     const parsed = parseInt(target.value)
-    emit('updateDays', { key, newDays: parsed })
+    emit('updateDays', { key: person.key, newDays: parsed })
   } catch {
     return
   }
 }
 
-const handleDelete = () => emit('delete', key)
+const handleDelete = () => emit('delete', person.key)
 </script>
 
 <template>
