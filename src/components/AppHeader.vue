@@ -5,8 +5,8 @@ defineEmits(['reset'])
 </script>
 
 <template>
-  <header class="flex flex-row">
-    <h1 class="text-3xl">Prorator</h1>
+  <header class="flex flex-row justify-between items-center">
+    <h1 class="text-2xl md:text-3xl">Prorator</h1>
     <GenericButton class="hover:text-red-700" @click="$emit('reset')"> Reset </GenericButton>
   </header>
 </template>

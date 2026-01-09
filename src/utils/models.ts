@@ -37,20 +37,3 @@ export const ProrationResult = z.object({
   perPerson: z.array(ProrationFixed),
 })
 export type ProrationResult = z.infer<typeof ProrationResult>
-
-/**
- * Frontend models
- */
-
-export const UpdateNameEvent = z.object({
-  key: z.string(),
-  newName: z.string().min(1, 'New name cannot be empty'),
-})
-export type UpdateNameEvent = z.infer<typeof UpdateNameEvent>
-
-export const UpdateDaysEvent = z.object({
-  key: z.string(),
-  // Default to at least 1 day
-  newDays: z.int().gt(0, 'New days must be greater than 0').catch(1),
-})
-export type UpdateDaysEvent = z.infer<typeof UpdateDaysEvent>

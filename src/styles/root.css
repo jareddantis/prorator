@@ -27,3 +27,23 @@ button {
 hr {
   @apply dark:border-gray-400;
 }
+
+#app {
+  @apply max-w-4xl w-full mx-auto p-6 md:p-8;
+}
+
+input {
+  @apply w-full border-b border-gray-400;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+section {
+  @apply w-full;
+}

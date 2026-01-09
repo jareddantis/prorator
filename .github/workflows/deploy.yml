@@ -32,6 +32,8 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Install dependencies
         run: npm ci
+      - name: Test Vue app
+        run: npm run test
       - name: Build Vue app
         run: npm run build
       - name: Upload artifact

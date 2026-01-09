@@ -1,39 +1,30 @@
 <script setup lang="ts">
-import { Person, UpdateDaysEvent, UpdateNameEvent } from '@/utils/models'
-import { ref } from 'vue'
-import type { Ref } from 'vue'
+import type { Person } from '@/utils/models'
+import { useProrator } from '@/stores/prorator'
 import GenericButton from './GenericButton.vue'
 
 const { person } = defineProps<{ person: Person }>()
+const { key, name, daysPresent } = person
 
-const name: Ref<string> = ref(person.name)
-const daysPresent: Ref<number> = ref(person.daysPresent)
-
-const emit = defineEmits<{
-  (e: 'updateName', data: UpdateNameEvent): void
-  (e: 'updateDays', data: UpdateDaysEvent): void
-  (e: 'delete', key: string): void
-}>()
+const store = useProrator()
 
 const handleNameChange = (e: Event) => {
   const target = e.target as HTMLInputElement
-  e.preventDefault()
-  emit('updateName', { key: person.key, newName: target.value })
+  const sanitized = target.value.trim()
+  if (sanitized.length > 0) {
+    store.updatePersonName(key, sanitized)
+  }
 }
 
 const handleDaysChange = (e: Event) => {
   const target = e.target as HTMLInputElement
-  e.preventDefault()
-
-  try {
-    const parsed = parseInt(target.value)
-    emit('updateDays', { key: person.key, newDays: parsed })
-  } catch {
-    return
+  const parsed = parseInt(target.value)
+  if (!isNaN(parsed) && parsed > 0) {
+    store.updatePersonDays(key, parsed)
   }
 }
 
-const handleDelete = () => emit('delete', person.key)
+const handleDelete = () => store.deletePerson(key)
 </script>
 
 <template>
@@ -44,8 +35,8 @@ const handleDelete = () => emit('delete', person.key)
         type="text"
         placeholder="Name"
         @change="handleNameChange"
-        v-model="name"
-        class="text-lg"
+        :value="name"
+        class="text-xl"
       />
     </div>
     <div class="flex flex-row gap-2 items-end">
@@ -53,8 +44,8 @@ const handleDelete = () => emit('delete', person.key)
         type="number"
         placeholder="Days present"
         @change="handleDaysChange"
-        v-model="daysPresent"
-        class="text-lg"
+        :value="daysPresent"
+        class="text-xl font-mono"
       />
       <p>days</p>
     </div>

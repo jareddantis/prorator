@@ -1,4 +1,4 @@
-.PHONY: install lint dev
+.PHONY: install lint dev test build
 
 install:
 	npm install
@@ -9,3 +9,8 @@ lint:
 dev:
 	npm run dev
 
+test:
+	npm run test
+
+build:
+	npm run build

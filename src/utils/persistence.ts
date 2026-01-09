@@ -1,20 +1,33 @@
 import { ProrationRequest } from './models'
 
 const STORAGE = window.localStorage ?? localStorage
-const KEY = '__PRORATOR_STATE'
+const STORAGE_KEY = '__PRORATOR_STATE'
 
-export const saveState = (request: ProrationRequest) => {
-  STORAGE.setItem(KEY, JSON.stringify(request))
+export const saveToLocalStorage = (data: ProrationRequest) => {
+  try {
+    STORAGE.setItem(STORAGE_KEY, JSON.stringify(data))
+  } catch (e) {
+    console.warn('Failed to save to localStorage:', e)
+  }
 }
 
-export const loadState = (): ProrationRequest | undefined => {
-  const savedState = STORAGE.getItem(KEY)
-  if (!savedState) return undefined
+export const loadFromLocalStorage = (): ProrationRequest | null => {
+  try {
+    const savedState = STORAGE.getItem(STORAGE_KEY)
+    if (!savedState) return null
 
-  const parsedState = ProrationRequest.safeParse(JSON.parse(savedState))
-  if (!parsedState.success) return undefined
-
-  return parsedState.data
+    const parsedState = ProrationRequest.safeParse(JSON.parse(savedState))
+    return parsedState.success ? parsedState.data : null
+  } catch (e) {
+    console.warn('Failed to load from localStorage:', e)
+    return null
+  }
 }
 
-export const clearState = () => STORAGE.removeItem(KEY)
+export const clearLocalStorage = () => {
+  try {
+    STORAGE.removeItem(STORAGE_KEY)
+  } catch (e) {
+    console.warn('Failed to clear localStorage:', e)
+  }
+}
