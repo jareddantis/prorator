@@ -3,16 +3,7 @@ import Decimal from 'decimal.js'
 
 const DECIMAL_PLACES = 2
 
-const addProration = (prorations: Proration[], key: string, amount: Decimal) => {
-  for (const proration of prorations) {
-    if (proration.key == key) {
-      proration.amount = proration.amount.plus(amount)
-      return
-    }
-  }
-}
-
-const addExcess = (prorations: Proration[], keys: string[], amount: Decimal) => {
+const addProration = (prorations: Proration[], keys: string[], amount: Decimal) => {
   for (const proration of prorations) {
     if (keys.includes(proration.key)) {
       proration.amount = proration.amount.plus(amount)
@@ -34,23 +25,23 @@ const checkSumIsCorrect = (prorations: Proration[], expectedSum: Decimal) => {
   // Only compare fixed-point results - errors smaller than 0.01 are OK
   const total = prorations
     .reduce((acc: Decimal, cur: Proration) => acc.plus(cur.amount), new Decimal(0))
-    .toFixed(2)
-  const expected = expectedSum.toFixed(2)
+    .toFixed(DECIMAL_PLACES)
+  const expected = expectedSum.toFixed(DECIMAL_PLACES)
 
   if (expected != total) {
     throw new Error(`Incorrect sum "${total}" (expected "${expected}")`)
   }
 }
 
-export const prorate = (request_: unknown): ProrationResult => {
+export const prorate = (request_: ProrationRequest): ProrationResult => {
   const { amount: _amount, days, people } = ProrationRequest.parse(request_)
   const numberOfPeople = people.length
   const peopleToCoverExcess = people
     .filter((person) => person.daysPresent == days)
     .map((person) => person.key)
 
-  if (peopleToCoverExcess.length <= 0) {
-    throw new Error(`Error: At least one person must have been present for all ${days} days.`)
+  if (peopleToCoverExcess.length < 1) {
+    throw new Error(`At least one person must have been present for all ${days} days`)
   }
 
   const amount = new Decimal(_amount)
@@ -72,12 +63,12 @@ export const prorate = (request_: unknown): ProrationResult => {
       )
     }
 
-    const payable = amountPerPersonPerDay.mul(person.daysPresent)
-    addProration(prorations, person.key, payable)
+    const payable = amountPerPersonPerDay.times(person.daysPresent)
+    addProration(prorations, [person.key], payable)
 
-    const unused = amountPerPerson.sub(payable)
-    const unusedPerPerson = unused.div(peopleToCoverExcess.length)
-    addExcess(prorations, peopleToCoverExcess, unusedPerPerson)
+    const unused = amountPerPerson.minus(payable)
+    const unusedPerPerson = unused.dividedBy(peopleToCoverExcess.length)
+    addProration(prorations, peopleToCoverExcess, unusedPerPerson)
   }
 
   checkSumIsCorrect(prorations, amount)
