@@ -99,6 +99,14 @@ export const useProrator = defineStore('prorator', () => {
     }
   }
 
+  const resetDays = () => {
+    days.value = DEFAULT_DAYS
+  }
+
+  const resetAmount = () => {
+    amount.value = DEFAULT_AMOUNT
+  }
+
   return {
     // State
     amount,
@@ -113,6 +121,8 @@ export const useProrator = defineStore('prorator', () => {
     deletePerson,
     calculate,
     reset,
+    resetDays,
+    resetAmount,
     loadState,
   }
 })

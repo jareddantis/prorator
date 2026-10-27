@@ -5,6 +5,7 @@ import { useProrator } from './stores/prorator'
 import AppHeader from './components/AppHeader.vue'
 import PersonTable from './components/PersonTable.vue'
 import AmountsPayable from './components/AmountsPayable.vue'
+import GenericButton from './components/GenericButton.vue'
 
 const store = useProrator()
 const { amount, days, result, error } = storeToRefs(store)
@@ -17,14 +18,20 @@ onMounted(() => {
 <template>
   <AppHeader @reset="store.reset" class="mb-8" />
   <main class="flex flex-col gap-6 md:gap-8 justify-between items-center">
-    <section class="grid gap-2 sm:grid-cols-2 items-center">
+    <section class="grid gap-2 sm:grid-cols-3 items-center">
       <h2>Amount to prorate</h2>
-      <input type="number" v-model="amount" step=".01" class="text-2xl font-mono" />
+      <div class="flex flex-row gap-2 items-center justify-end col-span-2">
+        <input type="number" v-model="amount" step=".01" class="text-2xl font-mono" />
+        <GenericButton @click="store.resetAmount" class="text-2xl no-underline!">&#x21BA;</GenericButton>
+      </div>
     </section>
 
-    <section class="grid gap-2 sm:grid-cols-2 items-center">
+    <section class="grid gap-2 sm:grid-cols-3 items-center">
       <h2>Days to prorate over</h2>
-      <input type="number" v-model="days" class="text-2xl font-mono" />
+      <div class="flex flex-row gap-2 items-center justify-end col-span-2">
+        <input type="number" v-model="days" class="text-2xl font-mono" />
+        <GenericButton @click="store.resetDays" class="text-2xl no-underline!">&#x21BA;</GenericButton>
+      </div>
     </section>
 
     <section>
